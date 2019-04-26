@@ -6,7 +6,7 @@ Created on Tue Apr 23 19:38:47 2019
 """
 
 from uuid import uuid1
-import pymongo
+from pymongo import MongoClient
 import logging
 from config import mongo_config
 
@@ -22,16 +22,18 @@ def make_mongo_connection(collection_name):
     mongo_auth_source = mongo_config.get('mongo_auth_source')
     mongo_auth_mechanism = mongo_config.get('mongo_auth_mechanism')
     db_name = mongo_config.get('db_name')
-
-    # Instantiating MongoClient
-    #client = MongoClient(mongo_uri, ssl=ssl_required)
-    client = pymongo.MongoClient(mongo_uri)
+    ssl_required = mongo_config.get('ssl_required')
+    
+    client = MongoClient(mongo_uri, ssl=ssl_required, replicaSet='MLBStats-shard-0')
+    #client = pymongo.MongoClient(mongo_uri)
     if requires_auth == 'true':
         client.the_database.authenticate(mongo_username,
                                          mongo_password,
                                          source=mongo_auth_source,
                                          mechanism=mongo_auth_mechanism
-                                         )
+     
+                                     )
+       
     db = client[db_name]
     mongo_colln = db[collection_name]
     

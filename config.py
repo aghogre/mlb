@@ -24,9 +24,15 @@ argument_config = {'stl1_batting': os.getenv('SLT1_BATTING','http://www.espn.com
                   
 
 mongo_config = {
-    'mongo_uri': os.getenv('MONGO_URI', 'mongodb://admin:admin@mlbstats-shard-00-00-clx9y.mongodb.net:27017,mlbstats-shard-00-01-clx9y.mongodb.net:27017,mlbstats-shard-00-02-clx9y.mongodb.net:27017/test?ssl=true&replicaSet=MLBStats-shard-0&authSource=admin&retryWrites=true'),
+    #'mongo_uri': os.getenv('MONGO_URI', 'mongodb://admin:admin@mlbstats-shard-00-00-clx9y.mongodb.net:27017,mlbstats-shard-00-01-clx9y.mongodb.net:27017,mlbstats-shard-00-02-clx9y.mongodb.net:27017/test?ssl=true&replicaSet=MLBStats-shard-0&authSource=admin&retryWrites=true'),
+    'mongo_uri': os.getenv('MONGO_URI', 'mlbstats-shard-00-00-clx9y.mongodb.net:27017'),
     'db_name': os.getenv('MONGO_DB_NAME', 'mlb'),
     'col_name': os.getenv('MONGO_COL_NAME', 'batter'),
+    'requires_auth': os.getenv('REQUIRES_AUTH', 'true'),
+    'mongo_username': os.getenv('MONGO_USER', 'admin'),
+    'mongo_password': os.getenv('MONGO_PASSWORD', 'admin'),
+    'mongo_auth_source': os.getenv('MONGO_AUTH_SOURCE', 'admin'),
+    'mongo_auth_mechanism': os.getenv('MONGO_AUTH_MECHANISM', 'SCRAM-SHA-1'),
     #'mongo_index_name': os.getenv('MONGO_INDEX_NAME', 'csrtc'),
-    #'ssl_required': os.getenv('MONGO_SSL_REQUIRED', False)
+    'ssl_required': os.getenv('MONGO_SSL_REQUIRED', True)
 }
