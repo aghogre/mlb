@@ -1,4 +1,4 @@
-FROM alpine:3.6
+FROM alpine:3.9
 
 RUN  apk add --no-cache --update bash
 RUN apk --update add python py-pip gcc openssl ca-certificates py-openssl wget
