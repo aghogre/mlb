@@ -9,10 +9,11 @@ ADD . /MLB
 
 WORKDIR /MLB
 
-RUN         apk add install libfreetype6 libfreetype6-dev \
-            && apk add install libfontconfig1 libfontconfig1-dev
-RUN         export PHANTOM_JS="phantomjs-2.1.1-linux-i686" \
-            && wget https://bitbucket.org/ariya/phantomjs/downloads/$PHANTOM_JS.tar.bz2 \
+RUN  apk add install libfreetype6 
+RUN apk add libfreetype6-dev 
+RUN apk add install libfontconfig1 
+RUN apk add libfontconfig1-dev
+RUN  export PHANTOM_JS="phantomjs-2.1.1-linux-i686" && wget https://bitbucket.org/ariya/phantomjs/downloads/$PHANTOM_JS.tar.bz2 \
             && tar xvjf $PHANTOM_JS.tar.bz2 \
             && mv $PHANTOM_JS /usr/local/share \
             && ln -sf /usr/local/share/$PHANTOM_JS/bin/phantomjs /usr/local/bin
