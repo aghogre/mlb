@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 import requests
 from selenium import webdriver
 import re
+import time
 
  
 dict_list=[]      
@@ -20,6 +21,9 @@ def cond(x):
 
 def stl_batting_stats(url, stats_list):
     driver = webdriver.PhantomJS()
+    driver.maximize_window()
+    driver.set_page_load_timeout(30)
+    time.sleep(20)
     driver.get(url)
     
     data = driver.find_element_by_id("team_batting")

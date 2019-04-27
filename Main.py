@@ -56,7 +56,7 @@ def main():
             update_mongo_collection(mongo_colln, mongo_id, feed_object)
     except:
         logging.error("Error Occurs while scraping and loading, raise exception to check exact error")
-        pass
+        raise
 
     
 if __name__ == '__main__':
