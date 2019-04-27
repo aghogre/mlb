@@ -9,6 +9,8 @@ ADD . /MLB
 
 WORKDIR /MLB
 
+RUN apk update && \
+    apk upgrade -U
 RUN  apk add install libfreetype6 
 RUN apk add libfreetype6-dev 
 RUN apk add install libfontconfig1 
