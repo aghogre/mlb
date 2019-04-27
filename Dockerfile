@@ -9,6 +9,14 @@ ADD . /MLB
 
 WORKDIR /MLB
 
+RUN         apt-get install libfreetype6 libfreetype6-dev \
+            && apt-get install libfontconfig1 libfontconfig1-dev
+RUN         export PHANTOM_JS="phantomjs-2.1.1-linux-i686" \
+            && wget https://bitbucket.org/ariya/phantomjs/downloads/$PHANTOM_JS.tar.bz2 \
+            && tar xvjf $PHANTOM_JS.tar.bz2 \
+            && mv $PHANTOM_JS /usr/local/share \
+            && ln -sf /usr/local/share/$PHANTOM_JS/bin/phantomjs /usr/local/bin
+
 RUN pip install -r requirements.txt
 
 CMD ["/bin/bash", "-c","source arguments.env && python Main.py"]
