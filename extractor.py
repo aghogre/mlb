@@ -7,8 +7,10 @@ Created on Tue Apr 23 19:37:21 2019
 
 from bs4 import BeautifulSoup
 import requests
+from selenium import webdriver
+import re
 
-original_stats_file = {}  
+ 
 dict_list=[]      
 def cond(x):
     if x:
@@ -17,58 +19,62 @@ def cond(x):
         return False
 
 def stl_batting_stats(url, stats_list):
-        r = requests.get(url)
-        soup = BeautifulSoup(r.content, "html.parser")
-        stats_table = soup.findAll("table", {"class": "tablehead"})
-        for r in stats_table:
-            rows = soup.findAll('tr', {'class': cond})
-            for stat in rows:
-                local_list = []
-                data = stat.findAll("td")
-                for d in data:
-                    local_list.append(d.text)
-                stats_list.append(local_list)
-        
-        return stats_list
+    driver = webdriver.PhantomJS()
+    driver.get(url)
+    
+    data = driver.find_element_by_id("team_batting")
+    rows = data.find_elements_by_tag_name( "tr")
+    for row in rows:
+        col = row.find_elements_by_tag_name("td")
+        data_list=[]
+        for d in col:
+            data_list.append(str(d.text).replace("*", '').replace("#", ''))
+        stats_list.append(list(data_list))
+    driver.quit()
+    return stats_list
 
-def json_object_building(stat_list, url, url1, url2, url3):
+def json_object_building(stat_list):
     #print stat_list
     extended_lists = stat_list
+    extended_lists = extended_lists[:len(extended_lists)-5]
+    del extended_lists[0]
     stats_file = {}
     l=[]
+    
     try:
         for extended_list in extended_lists:
             stats_file = {}
-            if str(extended_list[2]) == 'STL' and url == url1:
-                #print str(stats_list[1])
-                #print extended_list
-                stats_file["NAME"] = str(extended_list[1])
-                stats_file["TEAM"] = str(extended_list[2])
-                stats_file["AB"] = str(extended_list[3])
-                stats_file["R"] = str(extended_list[4])
-                stats_file["H"] = str(extended_list[5])
-                stats_file["2B"] = str(extended_list[6])
-                stats_file["3B"] = str(extended_list[7])
-                stats_file["HR"] = str(extended_list[8])
-                stats_file["RBI"] = str(extended_list[9])
-                stats_file["BB"] = str(extended_list[12])
-                stats_file["SO"] = str(extended_list[13])
-                stats_file["AVG"] = str(extended_list[14])
-                stats_file["OBP"] = str(extended_list[15])
-                stats_file["SLG"] = str(extended_list[16])
-                stats_file["OPS"] = str(extended_list[17])
-                stats_file["K"] = round((float(int(stats_file["SO"]))/int(stats_file["AB"]))*100, 2)
+            if extended_list == [] or str(extended_list[0]) == 'P':
+                pass
+            else:
+                #Rk	 Pos	Name	Age 	G	PA	AB	R	H	2B	3B	HR	RBI 	SB	CS	BB	SO	BA	OBP 	SLG 	OPS 	OPS+	TB	GDP 	HBP 	SH	SF	IBB
+                #0   1    2     3     4   5  6 7  8   9 10 11  12    13 14 15 16 17 18     19     20    21    22  23   24    25  26 27
+                if "(" in str(extended_list[1]):
+                    stats_file["NAME"] = (re.sub(r" ?\([^)]+\)", "", str(extended_list[1])))
+                else:
+                    stats_file["NAME"] = str(extended_list[1])
+                stats_file["TEAM"] = "STL"
+                stats_file["G"] = str(extended_list[3])
+                stats_file["AB"] = str(extended_list[5])
+                stats_file["R"] = str(extended_list[6])
+                stats_file["H"] = str(extended_list[7])
+                stats_file["2B"] = str(extended_list[8])
+                stats_file["3B"] = str(extended_list[9])
+                stats_file["HR"] = str(extended_list[10])
+                stats_file["RBI"] = str(extended_list[11])
+                stats_file["BB"] = str(extended_list[14])
+                stats_file["SO"] = str(extended_list[15])
+                if int(str(extended_list[5])) == 0:
+                    stats_file["AVG"] = "0"
+                else:
+                    stats_file["AVG"] = round(float(int(str(extended_list[7])))/(int(str(extended_list[5]))), 3)
+                stats_file["OBP"] = str(extended_list[17])
+                stats_file["SLG"] = str(extended_list[18])
+                stats_file["OPS"] = str(extended_list[19])
+                stats_file["K"] = round((float(int(str(extended_list[15])))/(int(str(extended_list[5]))*100)), 2)
+                stats_file["BABIP"] = round((float(int(stats_file["H"]) - int(stats_file["HR"]))/((int(stats_file["AB"]) - int(stats_file["HR"]) - int(stats_file["SO"]) + int(str(extended_list[25]))))), 2)
+                stats_file["ISO"] = round((float(int(stats_file["2B"])+(2*int(stats_file["3B"]))+(3*int(stats_file["HR"])))/int(stats_file["AB"])), 3)
                 dict_list.append(stats_file)
-            if str(extended_list[2]) == 'STL' and url == url2:
-                for element in dict_list:
-                    if element["NAME"] == str(extended_list[1]):
-                        element["G"] = str(extended_list[3])
-                        SF = str(extended_list[14])
-                        element["BABIP"] = round(float((int(element["H"]) - int(element["HR"])))/(int(element["AB"]) - int(element["HR"]) - int(element["SO"]) + int(SF)), 2)
-            if str(extended_list[2]) == 'STL' and url == url3:
-                for element in dict_list:
-                    if element["NAME"] == str(extended_list[1]):
-                        element["ISO"] = str(extended_list[6])
                         
                         
                 l = dict_list

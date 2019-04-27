@@ -24,15 +24,14 @@ def make_mongo_connection(collection_name):
     db_name = mongo_config.get('db_name')
     ssl_required = mongo_config.get('ssl_required')
     
-    client = MongoClient(mongo_uri, username=mongo_username, password=mongo_password, authsource= mongo_auth_source,
-                         authmechanism=mongo_auth_mechanism, ssl=ssl_required, replicaSet='MLBStats-shard-0')
+    client = MongoClient(mongo_uri, ssl=ssl_required, replicaSet='MLBStats-shard-0')
     #client = pymongo.MongoClient(mongo_uri)
-    """if requires_auth == 'true':
+    if requires_auth == 'true':
         client.the_database.authenticate(mongo_username,
                                          mongo_password,
                                          source=mongo_auth_source,
                                          mechanism=mongo_auth_mechanism
-                                         )"""
+                                         )
        
     db = client[db_name]
     mongo_colln = db[collection_name]
