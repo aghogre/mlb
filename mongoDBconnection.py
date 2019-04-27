@@ -24,7 +24,7 @@ def make_mongo_connection(collection_name):
     db_name = mongo_config.get('db_name')
     ssl_required = mongo_config.get('ssl_required')
     
-    client = MongoClient(mongo_uri, ssl=ssl_required, replicaSet='MLBStats-shard-0')
+    client = MongoClient(mongo_uri, ssl=ssl_required, replicaSet='MLBStats-shard-0', connect=False)
     #client = pymongo.MongoClient(mongo_uri)
     if requires_auth == 'true':
         client.the_database.authenticate(mongo_username,
